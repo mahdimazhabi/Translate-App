@@ -62,11 +62,15 @@ const TranslationInput = () => {
 
           <li className="text-custom-lighterDark font-bold cursor-pointer">
             <select
-              className="bg-transparent outline-none py-2"
+              className="bg-transparent  outline-none py-2"
               onChange={(e) => setSelectItems(e.target.value)}
             >
-              <option value="Spanish">Spanish</option>
-              <option value="French">French</option>
+              <option className="bg-custom-mediumDark/100" value="Spanish">
+                Spanish
+              </option>
+              <option className="bg-custom-mediumDark/100" value="French">
+                French
+              </option>
             </select>
           </li>
         </ul>

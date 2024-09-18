@@ -33,8 +33,10 @@ const TranslationOutput = () => {
           ))}
 
           <li className="text-custom-lighterDark font-bold cursor-pointer">
-            <select className="bg-transparent outline-none py-2">
-              <option value="Spanish">Spanish</option>
+            <select className="bg-transparent  outline-none py-2">
+              <option className="bg-custom-semiDark2/90" value="Spanish">
+                Spanish
+              </option>
             </select>
           </li>
         </ul>
