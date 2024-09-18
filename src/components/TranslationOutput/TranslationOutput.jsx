@@ -23,7 +23,7 @@ const TranslationOutput = () => {
               key={items.id}
               className={`text-custom-lighterDark font-bold cursor-pointer lg:px-4 py-2  rounded-2xl  ${
                 selectitems === items.title
-                  ? "bg-white/10 text-custom-veryLightGray transition-colors duration-100 "
+                  ? "bg-white/10 text-custom-veryLightGray transition-colors duration-200 "
                   : ""
               }`}
               onClick={() => CLickBckgroundHandler(items.title)}
