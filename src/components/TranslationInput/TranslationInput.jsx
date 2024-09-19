@@ -1,19 +1,18 @@
 import { CiVolumeHigh } from "react-icons/ci";
 import { IoCopyOutline } from "react-icons/io5";
-import { useState } from "react";
-import axios from "axios";
-
+import { useContext, useState } from "react";
+import contextApi from "../../context/contextApi";
 const DataLi = [
-  { id: 1, title: "Detect Language" },
-  { id: 2, title: "English" },
-  { id: 3, title: "French" },
+  { id: 1, title: "Detect Language", value: "auto" },
+  { id: 2, title: "English", value: "en" },
+  { id: 3, title: "French", value: "fr" },
 ];
 
 const TranslationInput = () => {
-  const [selectitems, setSelectItems] = useState("");
-  const [changeInput, setChangeInput] = useState("");
-  const [translatedText, setTranslatedText] = useState("");
+  const setcount = useContext(contextApi);
 
+  const [selectitems, setSelectItems] = useState("en");
+  const [changeInput, setChangeInput] = useState("");
   const ClickBackgroundHandler = (value) => {
     setSelectItems(value);
   };
@@ -24,21 +23,38 @@ const TranslationInput = () => {
   };
 
   const handleTranslate = () => {
-    if (changeInput.trim() && selectitems) {
-      const langPair = selectitems === "French" ? "en|fr" : "en|es"; // Example logic
-      axios
-        .get(
-          `https://mymemory.translated.net/doc/spec.php${encodeURI(
-            changeInput
-          )}&langpair=${langPair}`
-        )
-        .then((res) => {
-          setTranslatedText(res.data.responseData.translatedText);
-          console.log(res.data);
+    if (!changeInput) {
+      alert("Please enter text to translate.");
+      return;
+    }
+
+    fetch(
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+        changeInput
+      )}&langpair=en|${selectitems}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const translated = data.responseData.translatedText;
+        setcount.setCount(translated);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const ClickCopyHandler = () => {
+    if (changeInput) {
+      navigator.clipboard
+        .writeText(changeInput)
+        .then(() => {
+          alert("Text copied successfully!");
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          alert("Failed to copy text:");
         });
+    } else {
+      alert("Input Invalid");
     }
   };
 
@@ -50,11 +66,11 @@ const TranslationInput = () => {
             <li
               key={items.id}
               className={`text-custom-lighterDark font-bold lg:text-base cursor-pointer lg:px-4 py-2 rounded-2xl ${
-                selectitems === items.title
+                selectitems === items.value
                   ? "bg-white/10 text-custom-veryLightGray transition-colors duration-200"
                   : ""
               }`}
-              onClick={() => ClickBackgroundHandler(items.title)}
+              onClick={() => ClickBackgroundHandler(items.value)}
             >
               {items.title}
             </li>
@@ -65,10 +81,10 @@ const TranslationInput = () => {
               className="bg-transparent  outline-none py-2"
               onChange={(e) => setSelectItems(e.target.value)}
             >
-              <option className="bg-custom-mediumDark/100" value="Spanish">
+              <option className="bg-custom-mediumDark/100" value="es">
                 Spanish
               </option>
-              <option className="bg-custom-mediumDark/100" value="French">
+              <option className="bg-custom-mediumDark/100" value="fr">
                 French
               </option>
             </select>
@@ -82,6 +98,7 @@ const TranslationInput = () => {
           className="w-full h-40 bg-transparent outline-none text-custom-veryLightGray resize-none text-lg font-semibold"
           value={changeInput}
           onChange={ChangeInputHandler}
+          placeholder="Enter text to translate"
         ></textarea>
       </div>
 
@@ -96,7 +113,10 @@ const TranslationInput = () => {
           <div className="border-[3px] border-custom-lighterDark text-custom-lighterDark p-2 text-2xl rounded-lg cursor-pointer">
             <CiVolumeHigh />
           </div>
-          <div className="border-[3px] border-custom-lighterDark text-custom-lighterDark p-2 text-2xl rounded-lg cursor-pointer">
+          <div
+            className="border-[3px] border-custom-lighterDark text-custom-lighterDark p-2 text-2xl rounded-lg cursor-pointer"
+            onClick={ClickCopyHandler}
+          >
             <IoCopyOutline />
           </div>
         </div>
@@ -109,13 +129,6 @@ const TranslationInput = () => {
           </button>
         </div>
       </div>
-
-      {translatedText && (
-        <div className="mt-6 text-custom-veryLightGray">
-          <h3 className="font-bold">Translated Text:</h3>
-          <p>{translatedText}</p>
-        </div>
-      )}
     </div>
   );
 };
